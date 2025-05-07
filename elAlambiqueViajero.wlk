@@ -1,10 +1,44 @@
+object centroDeInscripcion {
+    var property ciudad = paris
+    const inscriptos = []
+    const rechazados = []
+
+    //Metodos de consulta
+
+    //Metodos de indicacion
+    method agregarParticipante(unParticipante){
+        if(ciudad.puedeLlegar(unParticipante.auto())){
+            inscriptos.add(unParticipante)
+        } else {
+            rechazados.add(unParticipante)
+        }
+    }
+
+    method replanificacionDeLaCarrera(unaCiudad){
+        ciudad = unaCiudad
+        const todos = inscriptos + rechazados
+        inscriptos.clear()
+        rechazados.clear()
+        todos.forEach({p => self.agregarParticipante(p)})
+    }
+
+    method irAlaCarrera(){
+        inscriptos.forEach({p => p.auto().desgaste()})
+    }
+
+    method realizarCarrera(){
+        inscriptos.min({p =>  p.auto().tiempoDeCarrera()})
+    }
+}
+
+//Participantes
 object luke{
+    var  property vehiculo = alambiqueVeloz
     var cantidadViajes = 0
     var recuerdo = null
-    var vehiculo = alambiqueVeloz
-
     method cantidadViajes() = cantidadViajes 
-
+    method recuerdo() = recuerdo
+    
     method viajar(lugar){
         if (lugar.puedeLlegar(vehiculo)) {
             cantidadViajes = cantidadViajes + 1
@@ -12,97 +46,364 @@ object luke{
             vehiculo.desgaste()
         }
     }
-    method recuerdo() = recuerdo
-    method vehiculo(nuevo) {vehiculo = nuevo}
 }
 
-object alambiqueVeloz {
-    var rapido = true
-    var combustible = 20
-    const consumoPorViaje = 10
-    var patente = "AB123JK"
-    method puedeFuncionar() = combustible >= consumoPorViaje
-    method desgaste() {
-        combustible = combustible - consumoPorViaje
+object gangsters{
+    const miembros = []
+
+    //metodos de consulta
+    method vehiculo() = antigualla
+    method sonPar() = miembros.size().even()
+    method totalLetras() = miembros.sum({m => m.size()})
+
+    //metodos de indicacion
+    method agregarGangster(unGangster) {
+        miembros.add(unGangster)
     }
-    method rapido() = rapido
-    method patenteValida() = patente.head() == "A"
+
+    method eliminarGangster() {
+        miembros.remove(miembros.last())
+    }
 }
 
+object nodoyunaYPan{
+    method vehiculo() = doblePP
+    method esOSonTramposos() = true
+}
+
+object profesorLocovich {
+    method vehiculo() = convertible
+}
+
+//Lugares
 object paris{
     method recuerdoTipico() = "Llavero Torre Eiffel"
-    method puedeLlegar(movil) =  movil.puedeFuncionar() 
-    
+    method puedeLlegar(auto) =  auto.puedeFuncionar()
+    method esAdecuadaParaCarreraRapida() = false 
+    method esAdecuadaParaAutosGrandes() = false
 }
 
 object buenosAires{
     method recuerdoTipico() = "Mate"
-    method puedeLlegar(auto) =  auto.rapido() 
+    method puedeLlegar(auto) =  auto.esRapido()
+    method esAdecuadaParaCarreraRapida() = false
+    method esAdecuadaParaAutosGrandes() = true
 }
 
 object bagdad {
-    var recuerdo = "bidon de petroleo"
-    method recuerdoTipico() = recuerdo
-    method recuerdo(nuevo) {recuerdo = nuevo }
-    method puedeLlegar(cualquierCosa) = true
+    var property recuerdoTipico = "bidon de petroleo"
+    method puedeLlegar(auto) = true
+    method esAdecuadaParaCarreraRapida() = false
+    method esAdecuadaParaAutosGrandes() = false
 }
 
 object lasVegas{
     var homenaje = paris
     method homenaje(lugar) {homenaje = lugar}
     method recuerdoTipico() = homenaje.recuerdoTipico()
-    method puedeLlegar(vehiculo) = homenaje.puedeLlegar(vehiculo)
+    method puedeLlegar(auto) = homenaje.puedeLlegar(auto)
+    method esAdecuadaParaCarreraRapida() = homenaje.esAdecuadaParaCarreraRapida()
+    method esAdecuadaParaAutosGrandes() = homenaje.esAdecuadaParaAutosGrandes()
 }
 
-object antigualla {
-    var gangsters = 7
-    method puedeFuncionar() = gangsters.even()
-    method rapido() = gangsters > 6
-    method desgaste(){
-        gangsters = gangsters -1
+//Nuevo lugar turistico
+object hurlingham{
+    method puedeLlegar(auto){
+        return auto.puedeFuncionar() and auto.esRapido() 
+        and auto.patenteValida()
     }
-    method patenteValida() = chatarra.rapido() 
+    method recuerdoTipico() = "sticker de la Unahur"
+    method esAdecuadaParaCarreraRapida() = true
+    method esAdecuadaParaAutosGrandes() = false
+}
 
+
+//Vehiculos
+object alambiqueVeloz {
+    var combustible = 20
+    const consumoPorViaje = 10
+    
+    //Metodos de consulta
+    method esRapido() = true
+    method esGrande() = false
+    method patente() = "AB123JK"
+    method patenteValida() = self.patente().head() == "A"
+    method puedeFuncionar() = combustible >= consumoPorViaje
+
+    //Metodos de indicacion
+    method desgaste() {
+        combustible = combustible - consumoPorViaje
+    }
+
+     method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
+
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
+}
+
+
+object antigualla {
+    //Metodos de consulta
+    method puedeFuncionar() = gangsters.sonPar()
+    method esRapido() = gangsters.totalLetras() > 35
+    method esGrande() = false
+    method patenteValida() = chatarra.esRapido() 
+
+    method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
+
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
+
+    //Metodos de indicacion
+    method desgaste(){
+        gangsters.eliminarGangster()
+    }
 }
 object chatarra {
     var cañones = 10
     var municiones = "ACME"
+
+    //Metodos de consulta
     method puedeFuncionar() = municiones == "ACME" and cañones.between(6,12)
-    method rapido() = municiones.size() < cañones
+    method esRapido() = municiones.size() < cañones
+    method esGrande() = cañones > 5
+    method patenteValida() = municiones.take(4) == "ACME" 
+    method cañones() = cañones
+
+    //Metodos de indicacion
     method desgaste(){
         cañones = (cañones / 2).roundUp(0)
         if (cañones < 5 )
           municiones = municiones + " Obsoleto"
     }
-    method patenteValida() = municiones.take(4) == "ACME" 
-    method cañones() = cañones
 
+     method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
+
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
 }
 
 object convertible{
-    var convertido = antigualla
-    method puedeFuncionar() = convertido.puedeFuncionar() 
-    method rapido() = convertido.rapido()
+    const vehiculos = []
+
+    //Metodos de consulta
+    method ultimoTransformado() = vehiculos.last()
+    method puedeFuncionar() = self.ultimoTransformado().puedeFuncionar() 
+    method esRapido() = self.ultimoTransformado().esRapido()
+    method esGrande() = self.ultimoTransformado().esGrande()
+    method patenteValida() = self.ultimoTransformado().patenteValida()
+
+    //Metodos de indicacion
     method desgaste(){
-        convertido.desgaste()
+        self.ultimoTransformado().desgaste()
     }
-    method convertir(vehiculo){
-        convertido = vehiculo
+
+    method agregarVehiculo(unVehiculo){
+        vehiculos.add(unVehiculo)
     }
-    method patenteValida() = convertido.patenteValida()
- 
-}
 
-object hurlingham{
-   method puedeLlegar(vehiculo) =
-     vehiculo.puedeFuncionar() and vehiculo.rapido() and vehiculo.patenteValida()
-  method recuerdoTipico() = "sticker de la Unahur"
-}
+     method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
 
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
+}
 
 object moto{
-    method rapido() = true
-    method puedeFuncionar() = not moto.rapido()
-    method desgaste() { }
+    //metodos de consulta
+    method esRapido() = true
+    method esGrande() = false
+    method puedeFuncionar() = !self.esRapido()
     method patenteValida() = false
+
+    //Metodos de indicacion
+    method desgaste() { }
+
+     method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
+
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
+}
+
+object doblePP{
+    var combustible = 200
+    const consumoPorViaje = 2 * self.patente().size()
+    
+    //Metodos de consulta
+    method esRapido() = true
+    method esGrande() = true
+    method patente() = "PPPPP"
+    method patenteValida() = self.patente().all({l => l == "P"})
+    method puedeFuncionar() = combustible >= consumoPorViaje
+
+     method tiempoDeCarrera(){
+        var tiempo = 0
+        if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 15
+            }
+        } else {
+            if(self.esRapido()){
+                tiempo += 5
+            } else {
+                tiempo += 10
+            }
+        }
+
+        if(centroDeInscripcion.ciudad().esAdecuadaParaAutosGrandes()){
+            if(self.esGrande()){
+                tiempo += 10
+            } else {
+                tiempo += 10
+            }
+        } else {
+            if(self.esGrande()){
+                tiempo += 15
+            } else {
+                tiempo += 5
+            }
+        }
+        return tiempo
+    }
+    
+    //Metodos de indicacion
+    method desgaste() {
+        combustible = combustible - consumoPorViaje
+    }
 }
