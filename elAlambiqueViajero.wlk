@@ -5,9 +5,16 @@ object centroDeInscripcion {
 
     //Metodos de consulta
 
+    method inscriptos() {
+        return inscriptos
+    }
+    method realizarCarrera(){
+        return inscriptos.min({p =>  p.vehiculo().tiempoDeCarrera()})
+    }
+
     //Metodos de indicacion
     method agregarParticipante(unParticipante){
-        if(ciudad.puedeLlegar(unParticipante.auto())){
+        if(ciudad.puedeLlegar(unParticipante.vehiculo())){
             inscriptos.add(unParticipante)
         } else {
             rechazados.add(unParticipante)
@@ -22,12 +29,8 @@ object centroDeInscripcion {
         todos.forEach({p => self.agregarParticipante(p)})
     }
 
-    method irAlaCarrera(){
-        inscriptos.forEach({p => p.auto().desgaste()})
-    }
-
-    method realizarCarrera(){
-        inscriptos.min({p =>  p.auto().tiempoDeCarrera()})
+    method irALaCarrera(){
+        inscriptos.forEach({p => p.vehiculo().desgaste()})
     }
 }
 
@@ -86,8 +89,8 @@ object paris{
 object buenosAires{
     method recuerdoTipico() = "Mate"
     method puedeLlegar(auto) =  auto.esRapido()
-    method esAdecuadaParaCarreraRapida() = false
-    method esAdecuadaParaAutosGrandes() = true
+    method esAdecuadaParaCarreraRapida() = true
+    method esAdecuadaParaAutosGrandes() = false
 }
 
 object bagdad {
@@ -120,14 +123,14 @@ object hurlingham{
 
 //Vehiculos
 object alambiqueVeloz {
-    var combustible = 20
+    var property combustible = 20
     const consumoPorViaje = 10
     
     //Metodos de consulta
     method esRapido() = true
     method esGrande() = false
     method patente() = "AB123JK"
-    method patenteValida() = self.patente().head() == "A"
+    method patenteValida() = self.patente().take(1) == "A"
     method puedeFuncionar() = combustible >= consumoPorViaje
 
     //Metodos de indicacion
@@ -135,7 +138,7 @@ object alambiqueVeloz {
         combustible = combustible - consumoPorViaje
     }
 
-     method tiempoDeCarrera(){
+    method tiempoDeCarrera(){
         var tiempo = 0
         if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
             if(self.esRapido()){
@@ -173,7 +176,7 @@ object antigualla {
     //Metodos de consulta
     method puedeFuncionar() = gangsters.sonPar()
     method esRapido() = gangsters.totalLetras() > 35
-    method esGrande() = false
+    method esGrande() = true
     method patenteValida() = chatarra.esRapido() 
 
     method tiempoDeCarrera(){
@@ -214,8 +217,8 @@ object antigualla {
     }
 }
 object chatarra {
-    var cañones = 10
-    var municiones = "ACME"
+    var property cañones = 10
+    var property municiones = "ACME"
 
     //Metodos de consulta
     method puedeFuncionar() = municiones == "ACME" and cañones.between(6,12)
@@ -360,18 +363,23 @@ object moto{
 }
 
 object doblePP{
-    var combustible = 200
+    var property combustible = 200
     const consumoPorViaje = 2 * self.patente().size()
     
     //Metodos de consulta
     method esRapido() = true
     method esGrande() = true
     method patente() = "PPPPP"
-    method patenteValida() = self.patente().all({l => l == "P"})
+    method patenteValida() = self.patente().take(self.patente().size()) == "PPPPP"
     method puedeFuncionar() = combustible >= consumoPorViaje
 
-     method tiempoDeCarrera(){
-        var tiempo = 0
+    //Metodos de indicacion
+    method desgaste() {
+        combustible = combustible - consumoPorViaje
+    }
+
+    method tiempoDeCarrera(){
+        var tiempo = 5 //ya que son tramposos nodoyuna y pan
         if(centroDeInscripcion.ciudad().esAdecuadaParaCarreraRapida()){
             if(self.esRapido()){
                 tiempo += 5
@@ -400,10 +408,5 @@ object doblePP{
             }
         }
         return tiempo
-    }
-    
-    //Metodos de indicacion
-    method desgaste() {
-        combustible = combustible - consumoPorViaje
     }
 }

@@ -1,64 +1,128 @@
 import elAlambiqueViajero.*
-test "luke cuenta cuando va de viaje"{
-    luke.viajar(paris)
-    assert.equals(1, luke.cantidadViajes())
-}
 
-test "luke viaja a paris"{
-    luke.viajar(paris)
-    assert.equals("Llavero Torre Eiffel", luke.recuerdo())
-}
+describe "test de la parte 1" {
 
+    test "luke cuenta cuando va de viaje"{
+        luke.viajar(paris)
+        assert.equals(1, luke.cantidadViajes())
+    }
 
-test "luke viaja a bs as"{
-    luke.viajar(buenosAires)
-    assert.equals("Mate", luke.recuerdo())
-}
-
-test "luke viaja a bagdad con un recuerdo diferente"{
-    bagdad.recuerdo("Armas Masivas")
-    luke.viajar(bagdad)
-    assert.equals("Armas Masivas", luke.recuerdo())
-}
-
-test "luke viaja a bagdad"{
-    bagdad.recuerdo("Armas Masivas")
-    luke.viajar(bagdad)
-    assert.equals("Armas Masivas", luke.recuerdo())
-}
-test "luke viaja a las vegas cuando hace homenaje a bs as"{
-    lasVegas.homenaje(buenosAires)
-    luke.viajar(lasVegas)
-    assert.equals("Mate", luke.recuerdo())
-}
-test "luke viaja a las vegas cuando hace homenaje a paris"{
-    lasVegas.homenaje(paris)
-    luke.viajar(lasVegas)
-    assert.equals("Llavero Torre Eiffel", luke.recuerdo())
-}
+    test "luke viaja a paris"{
+        luke.viajar(paris)
+        assert.equals("Llavero Torre Eiffel", luke.recuerdo())
+    }
 
 
-test "luke viaja a paris y le qeuda combustibles para seguir viajando"{
-    luke.viajar(paris)
-    assert.that(alambiqueVeloz.puedeFuncionar())
-}
-test "luke viaja 2 veces a paris y ya no le queda combustibles para seguir viajando"{
-    luke.viajar(paris)
-    luke.viajar(paris)
-    assert.notThat(alambiqueVeloz.puedeFuncionar())
-}
-test "luke viaja 2 veces, quiere viajar a Paris y no puede"{
-    luke.viajar(buenosAires)
-    luke.viajar(buenosAires)
-    luke.viajar(paris)
-    assert.notEquals("Llavero Torre Eiffel",luke.recuerdo())
+    test "luke viaja a bs as"{
+        luke.viajar(buenosAires)
+        assert.equals("Mate", luke.recuerdo())
+    }
+
+    test "luke viaja a bagdad con un recuerdo diferente"{
+        bagdad.recuerdoTipico("Armas Masivas")
+        luke.viajar(bagdad)
+        assert.equals("Armas Masivas", luke.recuerdo())
+    }
+
+    test "luke viaja a bagdad"{
+        bagdad.recuerdoTipico("Armas Masivas")
+        luke.viajar(bagdad)
+        assert.equals("Armas Masivas", luke.recuerdo())
+    }
+    test "luke viaja a las vegas cuando hace homenaje a bs as"{
+        lasVegas.homenaje(buenosAires)
+        luke.viajar(lasVegas)
+        assert.equals("Mate", luke.recuerdo())
+    }
+    test "luke viaja a las vegas cuando hace homenaje a paris"{
+        lasVegas.homenaje(paris)
+        luke.viajar(lasVegas)
+        assert.equals("Llavero Torre Eiffel", luke.recuerdo())
+    }
+
+
+    test "luke viaja a paris y le qeuda combustibles para seguir viajando"{
+        luke.viajar(paris)
+        assert.that(alambiqueVeloz.puedeFuncionar())
+    }
+    test "luke viaja 2 veces a paris y ya no le queda combustibles para seguir viajando"{
+        luke.viajar(paris)
+        luke.viajar(paris)
+        assert.notThat(alambiqueVeloz.puedeFuncionar())
+    }
+    test "luke viaja 2 veces, quiere viajar a Paris y no puede"{
+        luke.viajar(buenosAires)
+        luke.viajar(buenosAires)
+        luke.viajar(paris)
+        assert.notEquals("Llavero Torre Eiffel",luke.recuerdo())
+    }
+
+    test "luke viaja a hurlingham en el convertible convertido en chatarra" {
+    luke.vehiculo(convertible)
+    convertible.agregarVehiculo(chatarra)
+    luke.viajar(hurlingham)
+    assert.equals("sticker de la Unahur",luke.recuerdo())
+    assert.equals(5,chatarra.cañones())
+    }
 }
 
-test "luke viaja a hurlingham en el convertible convertido en chatarra" {
-  luke.vehiculo(convertible)
-  convertible.convertir(chatarra)
-  luke.viajar(hurlingham)
-  assert.equals("sticker de la Unahur",luke.recuerdo())
-  assert.equals(5,chatarra.cañones())
+describe "test de la parte 2"{
+    method inscribirParticipantes(){
+        centroDeInscripcion.agregarParticipante(luke)
+        centroDeInscripcion.agregarParticipante(gangsters)
+        centroDeInscripcion.agregarParticipante(nodoyunaYPan)
+        centroDeInscripcion.agregarParticipante(profesorLocovich)
+    }
 
-  }
+    method miembrosGangsters(){
+        gangsters.agregarGangster("tupac")
+        gangsters.agregarGangster("eminem")
+        gangsters.agregarGangster("boot boy")
+        gangsters.agregarGangster("godfather")
+    }
+
+    method resets(){
+        luke.vehiculo(alambiqueVeloz)
+        lasVegas.homenaje(buenosAires)
+        alambiqueVeloz.combustible(30)
+        chatarra.cañones(15)
+        chatarra.municiones("ACME")
+        convertible.agregarVehiculo(chatarra)
+        doblePP.combustible(30)
+        centroDeInscripcion.ciudad(paris)
+    }
+
+    method initialize(){
+        self.resets()
+        self.miembrosGangsters()
+        self.inscribirParticipantes()
+    }
+
+    test "Carrera en paris: no apta para autos rapidos y grandes. Corredores: Luke, gangsters y nodoyuna y pan.
+    El profesor no puede, chatarra no puede llegar a paris ,por ende, el convertible tampoco. El ganador es luke con el alambique"{
+        centroDeInscripcion.irALaCarrera()
+        assert.equals(luke, centroDeInscripcion.realizarCarrera())
+        assert.equals(alambiqueVeloz, centroDeInscripcion.realizarCarrera().vehiculo())
+    }
+
+    test "Carrera en Buenos Aires: apta para autos rapidos y no para grandes. Corredores: Luke, nodoyuna y pan y profesor Locovich.
+    Los gangsters no pueden, la antigualla no puede llegar a BsAs. El ganador es el profesor locovich con el convertible,
+    convertido en moto "{
+        luke.vehiculo(chatarra)
+        convertible.agregarVehiculo(moto)
+        centroDeInscripcion.replanificacionDeLaCarrera(buenosAires)
+        centroDeInscripcion.irALaCarrera()
+        assert.equals(profesorLocovich, centroDeInscripcion.realizarCarrera())
+        assert.equals(convertible, centroDeInscripcion.realizarCarrera().vehiculo())
+    }
+
+    test "Carrera en Hurligham: apta para autos rapidos y no para grandes. Corredores: Luke, y nodoyuna y pan.
+    Los gangsters y el profesor no pueden, la antigualla y el convertibleno puede llegar a hurligham. 
+    El ganador es luke con el alambique"{
+        convertible.agregarVehiculo(moto)
+        centroDeInscripcion.replanificacionDeLaCarrera(hurlingham)
+        centroDeInscripcion.irALaCarrera()
+        assert.equals(luke, centroDeInscripcion.realizarCarrera())
+        assert.equals(alambiqueVeloz, centroDeInscripcion.realizarCarrera().vehiculo())
+    }
+}
